@@ -215,8 +215,6 @@ class RotaryEmbedding(torch.nn.Module):
             key_len >= query_len
         ), "Number of keys has to be greater than or equal to number of queries."
 
-        query_float = query.float()
-        key_float = key.float()
 
         self._compute_sin_cos_embeddings(
             key_len, key_device=key_float.device, key_dtype=key_float.dtype
