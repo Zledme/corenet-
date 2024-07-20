@@ -2,7 +2,7 @@
 
 taskname: '+ [OpenELM-270M]'
 
-_anchor_context_length: &_anchor_context_length 2048
+_anchor_context_length: &_anchor_context_length 512
 # actual vocab size is 32001 after adding padding token, so we add few extra tokens to make it more hardware friendly
 # for classification layer in LM model
 _anchor_vocab_size: &_anchor_vocab_size 32128 
@@ -78,15 +78,15 @@ optim:
 scheduler:
   is_iteration_based: true
   # Train for about 1.4-1.5T tokens
-  max_iterations: 350000 
+  max_iterations: 50000 
   name: cosine
   warmup_init_lr: 1.e-06
   # warm-up for about 20B tokens (5000 * 4M tokens per iteration)
   warmup_iterations: 5000
   cosine:
-    max_lr: 0.0053
+    max_lr: 0.0013
     # papers use min_lr= 0.1 x max_lr
-    min_lr: 0.00053
+    min_lr: 0.00013
 
 model:
   activation_checkpointing: false
