@@ -54,8 +54,8 @@ For Linux (substitute `apt` for your package manager):
 ```bash
 sudo apt install git-lfs
 
-git clone git@github.com:apple/corenet.git
-cd corenet
+git clone https://github.com/Zledme/corenet-.git
+cd corenet-
 git lfs install
 git lfs pull
 # The following venv command is optional, but recommended. Alternatively, you can create and activate a conda environment.
@@ -74,7 +74,7 @@ For macOS, assuming you use Homebrew:
 ```bash
 brew install git-lfs
 
-git clone git@github.com:apple/corenet.git
+git clone https://github.com:apple/corenet.git
 cd corenet
 cd \$(pwd -P)  # See the note below.
 git lfs install

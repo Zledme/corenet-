@@ -31,7 +31,7 @@ dataset:
 
   category: "language_modeling"
   name: "general_lm"
-  language_modeling:
+  language_modeling:l
     sequence_length: *_anchor_context_length
     # filter text that have less than 512 tokens after tokenization to avoid excessive padding
     min_tokens_per_text: 256
@@ -55,8 +55,8 @@ text_tokenizer:
     enable_nfc_normalization: true
     append_sot_token: true
     append_eot_token: true
-    # Uncomment the below line and update the path of LLAMA SentencePiece model file
-    # model_path: <PATH_OF_LLAMA_SPM_MODEL>
+    #Uncomment the below line and update the path of LLAMA SentencePiece model file
+    model_path: /home/ubuntu/corenet-/tokenizer.model
 
 loss:
   category: "language_modeling"
