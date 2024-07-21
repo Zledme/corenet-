@@ -31,7 +31,7 @@ dataset:
 
   category: "language_modeling"
   name: "general_lm"
-  language_modeling:l
+  language_modeling: l
     sequence_length: *_anchor_context_length
     # filter text that have less than 512 tokens after tokenization to avoid excessive padding
     min_tokens_per_text: 256
