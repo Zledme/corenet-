@@ -78,7 +78,7 @@ class GPTConfig:
     rope_freq_constant: int = 10000
     # Note that rope_max_length is set to twice of max_context_length.
     # This allows flexibility in token lengths during training or fine-tuning.
-    rope_max_length: int = 4096
+    rope_max_length: int = 512
 
     def __post_init__(self) -> None:
         if self.num_gqa_groups is not None:
@@ -194,14 +194,14 @@ gpt_configs = {
         # For gated FFN, the value is around 3. while for standard FFN, the value is 4.0.
         ffn_multipliers=3.0,
         # Number of GQA groups.
-        num_gqa_groups=4,
+        num_gqa_groups=6,
         normalize_qk_projections=True,
         share_input_output_layers=True,
     ),
     "OpenELM-270M": dict(
         num_transformer_layers=20,
         model_dim=384,
-        head_dim=8,
+        head_dim=48,
         num_gqa_groups=4,
         normalize_qk_projections=True,
         share_input_output_layers=True,
@@ -371,6 +371,7 @@ class MultiHeadCausalAttention(nn.Module):
             past_keys = keys
             past_values = values
 
+        #print("rot:",queries.shape, keys.shape)
         # Add positional embedding
         queries, keys = self.pos_embedding(queries, keys)
 

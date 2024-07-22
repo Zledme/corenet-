@@ -31,7 +31,7 @@ dataset:
 
   category: "language_modeling"
   name: "general_lm"
-  language_modeling: l
+  language_modeling:
     sequence_length: *_anchor_context_length
     # filter text that have less than 512 tokens after tokenization to avoid excessive padding
     min_tokens_per_text: 256
@@ -40,12 +40,95 @@ dataset:
     shuffle_data: true
     general_lm:
       train_data_info: [
-        {
         # Uncomment below line and add path to parquet, jsonl, and json.gz files from pre-training corpora.
-        # We expect the path to be of the form "/path/to/train-{file_id:05d}-05534.parquet
-          # "file_name": PATH_TO_PARQUET_FILES.
-          "text_key": "content",
-          "file_id_range": [0, 5535], 
+        # # We expect the path to be of the form "/path/to/train-{file_id:05d}-05534.parquet
+        #   # "file_name": PATH_TO_PARQUET_FILES.
+        #   "text_key": "content",
+        #   "file_id_range": [0, 5535], 
+        # },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/algebraic-stack-train-0000.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/arxiv-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/books-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/c4-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/cc_en_head-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/cc_en_middle-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/cc_en_tail-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/falcon-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/megawika-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/open-web-math-train-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        ### peS2o
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/pes2o-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        ### reddit
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/reddit-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        # stack
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/stackexchange-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/starcoder-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/tulu_flan-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
+        },
+        # wiki
+        {
+          "file_name": "/home/ubuntu/corenet-/projects/openelm/data/wiki-{file_id:04d}.json.gz",
+          "text_key": "text",
+          "file_id_range": [0, 1]
         },
       ]
 
@@ -97,6 +180,7 @@ model:
       vocab_size: *_anchor_vocab_size
       max_context_length: *_anchor_context_length
       padding_index: *_anchor_padding_index
+      model_dim: 384
 
 stats:
   val: [ "loss"]

@@ -67,21 +67,26 @@ class RoMaFunctions:
 
         return torch.stack([x_res, y_res, z_res], dim = -1).flatten(3)
 
-def precompute_freqs_cis(dim: int, end: int, theta: float = 10000.0):
-    freqs = 1.0 / (theta ** (torch.arange(0, dim, 3)[: (dim // 3)].float() / dim))
-    t = torch.arange(end, device=freqs.device)  # type: ignore
-    freqs = torch.outer(t, freqs).float()  # type: ignore
-    freqs_cos = torch.cos(freqs)  # real part
-    freqs_sin = torch.sin(freqs)  # imaginary part
-    return freqs, freqs
+# def precompute_freqs_cis(dim: int, end: int, theta: float = 10000.0):
+#     print("0..dim", dim, end)
+#     freqs = 1.0 / (theta ** (torch.arange(0, dim, 3)[: (dim // 3)].float() / dim))
+#     print("1...",freqs.shape)
+#     t = torch.arange(end, device=freqs.device)  # type: ignore
+#     print("2...",t.shape)
+#     freqs = torch.outer(t, freqs).float()  # type: ignore
+#     print("3....",freqs.shape)
+#     freqs_cos = torch.cos(freqs)  # real part
+#     freqs_sin = torch.sin(freqs)  # imaginary part
+#     return freqs
 
-def reshape_for_broadcast(freqs_cis: torch.Tensor, x: torch.Tensor):
-    ndim = x.ndim
-    assert 0 <= 1 < ndim
-    # breakpoint()
-    assert freqs_cis.shape == (x.shape[1], x.shape[-1])
-    shape = [d if i == 1 or i == ndim - 1 else 1 for i, d in enumerate(x.shape)]
-    return freqs_cis.view(shape)
+# def reshape_for_broadcast(freqs_cis: torch.Tensor, x: torch.Tensor):
+#     ndim = x.ndim
+#     print("freqs.shape", freqs_cis.shape)
+#     assert 0 <= 1 < ndim
+#     # breakpoint()
+#     assert freqs_cis.shape == (x.shape[1], x.shape[-1])
+#     shape = [d if i == 1 or i == ndim - 1 else 1 for i, d in enumerate(x.shape)]
+#     return freqs_cis.view(shape)
 
 
 
@@ -103,7 +108,7 @@ class RotaryEmbedding(torch.nn.Module):
     ) -> None:
         inv_freq = 1.0 / (
             freq_constant
-            ** (torch.arange(0, model_dim, 2, dtype=torch.float32) / model_dim)
+            ** (torch.arange(0, model_dim, 3, dtype=torch.float32) / model_dim)
         )
         super().__init__()
 
@@ -160,13 +165,13 @@ class RotaryEmbedding(torch.nn.Module):
                 dtype=torch.float32,
                 device=self.inv_freq.device,
             )
+            #print("pos_In",pos_index.shape)
             # The shape of 'pos_index_theta' is [number of key tokens, model dimension]
-            pos_index_theta = torch.einsum("i,j->ij", pos_index, self.inv_freq)
+            emb = torch.einsum("i,j->ij", pos_index, self.inv_freq)
             # The shape of 'emb' is [number of key tokens, model dimension]
-            emb = torch.cat((pos_index_theta, pos_index_theta), dim=-1)
-
-
-            # the shape of cos and sin embeddings is [number of key tokens, model_dim]
+            #emb = torch.cat((pos_index_theta, pos_index_theta, pos_index_theta), dim=-1)
+            #print("emb:",emb.shape)
+           # sin embeddings is [number of key tokens, model_dim]
             cos_emb = emb.to(dtype=key_dtype, device=key_device)
             sin_emb = emb.to(dtype=key_dtype, device=key_device)
 
@@ -216,26 +221,36 @@ class RotaryEmbedding(torch.nn.Module):
         ), "Number of keys has to be greater than or equal to number of queries."
 
 
-        self._compute_sin_cos_embeddings(
-            key_len, key_device=key_float.device, key_dtype=key_float.dtype
-        )
-
         xq_a, xq_b, xq_c = xq.float().reshape(xq.shape[:-1] + (-1, 3)).unbind(-1)
         xk_a, xk_b, xk_c = xk.float().reshape(xk.shape[:-1] + (-1, 3)).unbind(-1)
-    
-        # reshape freqs_cos and freqs_sin for broadcasting
-        freqs = reshape_for_broadcast(self._cached_cos, xq_a)
-        # freqs_sin = reshape_for_broadcast(freqs_sin, xq_a)
 
+        #print("shape",xk.shape)
+        self._compute_sin_cos_embeddings(
+            xk_a.shape[2], key_device=xk_a.float().device, key_dtype=xk_a.float().dtype
+        )
+
+
+        #print(self._cached_cos.shape, xk.shape,xk_a.shape) 
+        # print("moel_im", self.model_dim)
+        # freqs = precompute_freqs_cis(self.model_dim, self.max_seq_length)      
+        # print("freqs.shape",freqs.shape, xk_a.shape)
+        # freqs = reshape_for_broadcast(self._cached_cos, xq_a)
+        freqs = self._cached_cos
+        #print("freqs.shape",freqs.shape, xk_a.shape)
+
+
+        #breakpoint()
         rot_axis = torch.tensor([1.0], device=freqs.device) / torch.sqrt(torch.tensor(3.0))
         axis = rot_axis / torch.norm(rot_axis, dim=-1, keepdim=True)
         half_angle = freqs / 2.0
         sin_half = torch.sin(half_angle)
-        # return torch.cat([torch.cos(half_angle), axis * sin_half], dim=-1)
+
+        
         quaternion = torch.stack([torch.cos(half_angle), rot_axis * sin_half, rot_axis * sin_half, rot_axis * sin_half], dim=0)
-        
-        # quaternion = RoMaFunctions.e_to_q(half_angle, half_angle, half_angle)
-        
+
+        # print("quat.shape",quaternion.shape)
+
         xq_out = RoMaFunctions.qvq_multiply(quaternion, xq_a, xq_b, xq_c)
         xk_out = RoMaFunctions.qvq_multiply(quaternion, xk_a, xk_b, xk_c)
+        
         return xq_out.type_as(xq), xk_out.type_as(xk)
