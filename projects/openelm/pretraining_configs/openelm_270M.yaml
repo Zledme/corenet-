@@ -161,7 +161,7 @@ optim:
 scheduler:
   is_iteration_based: true
   # Train for about 1.4-1.5T tokens
-  max_iterations: 2000000 
+  max_iterations: 200000 
   name: cosine
   warmup_init_lr: 1.e-04
   # warm-up for about 20B tokens (5000 * 4M tokens per iteration)
@@ -180,7 +180,7 @@ model:
       vocab_size: *_anchor_vocab_size
       max_context_length: *_anchor_context_length
       padding_index: *_anchor_padding_index
-      model_dim: 576
+      model_dim: 768
 
 stats:
   val: [ "loss"]
