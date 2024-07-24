@@ -199,8 +199,8 @@ gpt_configs = {
         share_input_output_layers=True,
     ),
     "OpenELM-270M": dict(
-        num_transformer_layers=24,
-        model_dim=768,
+        num_transformer_layers=20,
+        model_dim=576,
         head_dim=48,
         num_gqa_groups=4,
         normalize_qk_projections=True,
