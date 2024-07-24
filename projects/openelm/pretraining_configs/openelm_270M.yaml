@@ -180,7 +180,7 @@ model:
       vocab_size: *_anchor_vocab_size
       max_context_length: *_anchor_context_length
       padding_index: *_anchor_padding_index
-      model_dim: 768
+      model_dim: 576
 
 stats:
   val: [ "loss"]
